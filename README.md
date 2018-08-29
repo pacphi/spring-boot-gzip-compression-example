@@ -199,3 +199,7 @@ e.g. on [Pivotal Web Services](https://run.pivotal.io/features/)
 # License
 
 Released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0.html)
+
+# Credits
+
+* Thanks to [Ben Hale](https://github.com/nebhale) for the `/actuator/httptrace` tip (I used for verification purposes).
