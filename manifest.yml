@@ -1,10 +1,12 @@
 ---
 applications:
 - name: spring-boot-gzip-compression-example
+  instances: 1
   random-route: true
   memory: 1G
   path: build/libs/spring-boot-gzip-compression-example-1.0.0.jar
-  buildpack: java_buildpack
-  instances: 1
+  buildpacks: 
+    - java_buildpack
+  stack: cflinuxfs3
   env:
     JAVA_OPTS: -Djava.security.egd=file:///dev/urandom

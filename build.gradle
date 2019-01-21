@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.4.RELEASE'
+        springBootVersion = '2.1.2.RELEASE'
     }
 
     repositories {
@@ -13,10 +13,6 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
     }
-}
-
-task wrapper(type: Wrapper) {
-   gradleVersion = '4.8.1'
 }
 
 apply plugin: 'java'
@@ -38,7 +34,6 @@ dependencies {
     compile ("org.springframework.boot:spring-boot-starter-actuator")
     compile ("org.springframework.boot:spring-boot-starter-web") 
     testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("junit:junit")
 }
 
 jar {
