@@ -1,42 +1,163 @@
-buildscript {
-    ext {
-        springBootVersion = '2.2.6.RELEASE'
-    }
+plugins {
+    id 'com.gorylenko.gradle-git-properties' version '2.2.2'
+    id 'org.springframework.boot' version '2.3.0.M4'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'com.github.ben-manes.versions' version '0.28.0'
+	id 'java'
+    id 'jacoco'
+    id 'com.google.cloud.tools.jib' version '2.1.0'
+    id 'maven-publish'
+    id 'com.github.spotbugs' version '4.0.5'
+    id 'info.solidsoft.pitest' version '1.4.8'
+}
 
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven { url "https://repo.spring.io/plugins-release" }
-    }
+gitProperties {
+    dateFormat = "yyyy-MM-dd'T'HH:mmZ"
+    dateFormatTimeZone = "UTC"
+}
 
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+spotbugs {
+    toolVersion = '4.0.0-beta1'
+    ignoreFailures = true
+    effort = 'max'
+    reportLevel = 'low'
+    showProgress = true
+}
+
+spotbugsMain {
+    reports {
+        html {
+            enabled = true
+            destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+        }
+        xml {
+            enabled = true
+            destination = file("$buildDir/reports/spotbugs/main/spotbugs.xml")
+        }
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse-wtp'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
-version = '1.0.0'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+group = 'io.pivotal'
+version = '0.1-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
-    mavenCentral()
+	mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
+    maven { url "https://jitpack.io" }
 }
 
+
+bootRun {
+    // support passing -Dsystem.property=value to bootRun task
+    systemProperties = System.properties
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showCauses true
+        showExceptions true
+        showStackTraces true
+	}
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+jacoco {
+	toolVersion = "0.8.5"
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		html.enabled = true
+		csv.enabled = false
+	}
+}
+
+pitest {
+    testPlugin = "junit5"
+    jvmArgs = ['-Xmx1024m']
+    threads = 5
+    targetClasses = ['io.pivotal.cfapp.*']
+    outputFormats = ['XML', 'HTML']
+}
 
 dependencies {
-    compile ("org.springframework.boot:spring-boot-starter-actuator")
-    compile ("org.springframework.boot:spring-boot-starter-web") 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation('org.junit.jupiter:junit-jupiter-api')
+    testImplementation('org.junit.jupiter:junit-jupiter-params')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	    exclude group: 'junit', module: 'junit'
+    }
+    testImplementation('org.pitest:pitest-junit5-plugin:0.12')
 }
 
-jar {
-    baseName = "spring-boot-gzip-compression-example"
-    version = version
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'spring-boot-gzip-compression-exampleler'
+                url = 'https://github.com/pacphi/spring-boot-gzip-compression-exampleler'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'pacphi'
+                        name = 'Chris Phillipson'
+                        email = 'cphillipson@pivotal.io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/pacphi/spring-boot-gzip-compression-exampleler.git'
+                    developerConnection = 'scm:git:ssh://github.com/pacphi/spring-boot-gzip-compression-exampleler.git'
+                    url = 'https://github.com/pacphi/spring-boot-gzip-compression-exampleler'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            // change URLs to point to your repos, e.g. http://my.org/repo
+            def releasesRepoUrl = "$buildDir/repos/releases"
+            def snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
 }
+
+
+javadoc {
+    failOnError = false
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+bootJar.enabled = true
+jar.enabled = false
+
+test.finalizedBy jacocoTestReport

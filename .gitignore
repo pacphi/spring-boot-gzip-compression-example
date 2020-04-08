@@ -11,3 +11,6 @@ uploads/
 *.sql
 bin/
 .vscode/
+src/main/resources/static
+.history/
+citylots.json.gz
