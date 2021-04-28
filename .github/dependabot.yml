@@ -1,0 +1,27 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "13:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: com.github.spotbugs
+    versions:
+    - 4.6.0
+    - 4.6.2
+    - 4.7.0
+  - dependency-name: com.google.cloud.tools.jib
+    versions:
+    - 2.7.1
+    - 2.8.0
+  - dependency-name: com.github.ben-manes.versions
+    versions:
+    - 0.36.0
+  - dependency-name: com.gorylenko.gradle-git-properties
+    versions:
+    - 2.2.4
+  - dependency-name: info.solidsoft.pitest
+    versions:
+    - 1.5.2
