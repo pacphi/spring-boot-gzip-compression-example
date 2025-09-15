@@ -4,8 +4,8 @@ Simple example that demonstrates how to configure Gzip [compression](https://doc
 
 ## Requirements
 
-* [java](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) 8u181 or better
-* [cf](https://github.com/cloudfoundry/cli/releases) CLI 6.38.0 or better
+* [java](https://www.oracle.com/java/technologies/downloads/?er=221886#java17) 17u16 or better
+* [cf](https://github.com/cloudfoundry/cli/releases) CLI 8.11.0 or better
 
 ## To get the code
 
