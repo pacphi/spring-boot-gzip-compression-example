@@ -7,7 +7,7 @@ plugins {
     id 'jacoco'
     id 'com.google.cloud.tools.jib' version '3.5.1'
     id 'maven-publish'
-    id 'com.github.spotbugs' version '6.4.5'
+    id 'com.github.spotbugs' version '6.4.6'
     id 'info.solidsoft.pitest' version '1.15.0'
 }
 
